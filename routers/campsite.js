@@ -64,7 +64,7 @@ router.get("/:userNum", (req, res) => {
             res.json(results);
         } else {
             // 조회된 결과가 없으면 적절한 메시지와 함께 응답합니다.
-            res.status(404).send('Campsite not found');
+            res.send('Campsite not found');
         }
     });
 });
@@ -74,17 +74,16 @@ router.get("/detail/:campsiteNum", function (req, res) {
     const campsiteNum = req.params.campsiteNum;
 
     if (!campsiteNum) {
-        return res.status(400).send('campsiteNum query parameter is required');
+        return res.send('campsiteNum query parameter is required');
     }
 
     // 캠핑장 기본 정보 조회
     const campsiteQuery = "SELECT * FROM campsite WHERE campsite_num = ?";
     conn.query(campsiteQuery, [campsiteNum], (err, campsiteResult) => {
-        if (err) return res.status(500).send('Error fetching campsite information');
-
-        if (campsiteResult.length === 0) {
-            return res.status(404).send('Campsite not found');
+        if (err) {
+            return res.status(500).send('Error fetching campsite information');
         }
+
 
         const campsiteInfo = campsiteResult[0];
 
@@ -158,11 +157,7 @@ router.get("/", (req, res) => {
             console.error(err);
             return res.status(500).send('서버 에러가 발생했습니다.'); // 에러 응답 추가
         } else {
-            if (results.length > 0) {
                 return res.status(200).send(results);
-            } else {
-                return res.status(404).send('데이터가 없습니다.'); // 데이터가 없을 때의 처리
-            }
         }
     })
 })

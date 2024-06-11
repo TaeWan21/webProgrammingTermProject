@@ -29,6 +29,7 @@ const campsite = require("./routers/campsite");
 const site = require("./routers/site");
 const reservation = require("./routers/reservation");
 const review = require("./routers/review");
+const filtering = require("./routers/filtering");
 // 로그인
 app.use("/login", login);
 // 캠핑장
@@ -39,6 +40,8 @@ app.use("/site", site);
 app.use("/reservation", reservation);
 // 리뷰
 app.use("/review", review);
+// 필터링
+app.use("/filtering", filtering)
 
 
 server.listen(port);

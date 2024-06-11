@@ -89,7 +89,7 @@ router.get("/myPage/:siteId", (req, res) => {
         }
 
         if (siteResults.length === 0) {
-            return res.status(404).send('Site not found.');
+            return res.send('Site not found.');
         }
 
         const campsiteNum = siteResults[0].campsite_num;

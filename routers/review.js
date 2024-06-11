@@ -17,7 +17,7 @@ const upload = multer({ dest: 'uploads/' });
 
 // 리뷰 등록
 router.post("/", upload.fields([{ name : 'reviewPhoto', maxCount : 1}]), (req, res) => {
-    const {campsiteNum, userNum, reviewPost, reviewStar} = res.body;
+    const {campsiteNum, userNum, reviewPost, reviewStar} = req.body;
 
     const reviewPhoto = req.files['reviewPhoto'][0].path;
 
@@ -36,7 +36,7 @@ router.post("/", upload.fields([{ name : 'reviewPhoto', maxCount : 1}]), (req, r
 // 리뷰 조회
 router.get("/:campsiteNum", (req, res) => {
     const { campsiteNum } = req.params;
-    const reviewQuery = "SELECT * FROM campsite WHERE campsite_num = ?";
+    const reviewQuery = "SELECT * FROM review_info WHERE campsite_num = ?";
     conn.query(reviewQuery, [campsiteNum], (err, results) => {
         if (err) {
             return res.status(500).send('Error');
@@ -45,4 +45,5 @@ router.get("/:campsiteNum", (req, res) => {
         }
     })
 })
+
 module.exports = router;
