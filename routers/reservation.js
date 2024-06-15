@@ -31,7 +31,7 @@ router.post("/", (req, res) => {
 // 해당 사이트 예약 조회
 router.get("/:siteId", (req, res) => {
     const {siteId} = req.params;
-    const query = "SELECT * FROM reservation_info WHERE site_id = ?";
+    const query = "SELECT * FROM reservation_info WHERE site_id = ? AND approval <> 'cancel'";
     conn.query(query, [siteId], (err, results) => {
         if (err) {
             console.log(err);
@@ -91,7 +91,7 @@ router.get("/admin/:userNum", async (req, res) => {
                 const reservationInfoPromises = campsites.flatMap((campsite) =>
                     campsite.siteInfos.map((siteInfo) =>
                         new Promise((resolve, reject) => {
-                            const getReservationInfo = "SELECT * FROM reservation_info WHERE site_id = ?";
+                            const getReservationInfo = "SELECT * FROM reservation_info WHERE site_id = ? AND approval = 'wait'";
                             conn.query(getReservationInfo, [siteInfo.site_id], (err, reservationInfos) => {
                                 if (err) {
                                     return reject(err);
@@ -153,7 +153,20 @@ router.post("/refuse/:reservationId", (req, res) => {
         if (err) {
             console.error(err);
         } else {
-            res.status(200).send("reservation approved successfully.");
+            res.status(200).send("reservation refused successfully.");
+        }
+    })
+})
+
+// 예약 취소
+router.post("/cancel/:reservationId", (req, res) => {
+    const {reservationId} = req.params;
+    const query = "UPDATE reservation_info SET approval = ? WHERE reservation_id = ?";
+    conn.query(query, ["cancel", reservationId], (err, results) => {
+        if (err) {
+            console.error(err);
+        } else {
+            res.status(200).send("reservation refused successfully.");
         }
     })
 })

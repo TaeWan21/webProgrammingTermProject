@@ -14,15 +14,19 @@ const upload = multer({ dest: 'uploads/' });
 
 router.post("/", (req, res) => {
 
-    const {category, region, checkIn, checkOut } = req.body;
+    const {name, category, region, checkIn, checkOut } = req.body;
 
     let query =
         `SELECT c.* FROM campsite c 
             LEFT JOIN site_info si ON c.campsite_num = si.campsite_num 
-            LEFT JOIN reservation_info ri ON si.site_id = ri.site_id WHERE 1 = 1 `;
+            LEFT JOIN reservation_info ri ON si.site_id = ri.site_id WHERE 1 = 1 ` ;
 
     const queryParams = [];
 
+    if (name) {
+        query += `AND c.name LIKE ?`;
+        queryParams.push(`%${name}%`);
+    }
     if (category) {
         query += `AND si.category = ?`;
         queryParams.push(category);
@@ -33,7 +37,7 @@ router.post("/", (req, res) => {
         queryParams.push(`%${region}%`);
     }
     if (checkIn && checkOut) {
-        query += `AND NOT EXISTS (SELECT 1 FROM reservation_info ri WHERE si.site_id = ri.site_id AND ((ri.check_in <= ? AND ri.check_out >= ?) OR (ri.check_in BETWEEN ? AND ?) OR (ri.check_out BETWEEN ? AND ?)))
+        query += `AND NOT EXISTS (SELECT 1 FROM reservation_info ri WHERE si.site_id = ri.site_id AND ri.approval <> 'cancel' AND ((ri.check_in <= ? AND ri.check_out >= ?) OR (ri.check_in BETWEEN ? AND ?) OR (ri.check_out BETWEEN ? AND ?)))
         `;
         queryParams.push(checkOut, checkIn, checkIn, checkOut, checkIn, checkOut);
     }
